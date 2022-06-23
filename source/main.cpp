@@ -7,7 +7,7 @@
 int main()
 {
     try
-    {
+{
 	Application app;
 	app.Run();
     }

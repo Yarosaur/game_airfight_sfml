@@ -1,20 +1,35 @@
-#OBJS1 = scene_node.cpp sprite_node.cpp world.cpp entity.cpp aircraft.cpp player.cpp main.cpp
-#OBJS2 = command.cpp command_queue.cpp utility.cpp parallel_task.cpp application.cpp
-#OBJS3 = state.cpp state_stack.cpp title_state.cpp menu_state.cpp game_state.cpp pause_state.cpp loading_state.cpp  
-#OBJS4 = component.cpp container.cpp label.cpp button.cpp settings_state.cpp
 
-OBJS = source/*.cpp
+BUILD_DIR := ./build
 
-CC = g++ -std=c++17
+LDFLAGS := -L/usr/lib/x86-64-linux-gnu
+INCLUDES := -I/usr/include/SFML -Iinclude
+LDLIBS := -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
-COMPILER_FLAGS = -Wall -Wextra
+CXX := g++
+CXXFLAGS := -std=c++17 -Wall -Wextra
+CPPFLAGS ?= $(INCLUDES) -MMD -MP
 
-LINKER_FLAGS = -L/usr/lib/x86-64-linux-gnu -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+OUT := airfight
 
-INCLUDE_FLAGS = -I/usr/include/SFML -Iinclude
+SRCS := $(wildcard ./source/*.cpp)
+OBJS := $(patsubst ./source/%.cpp,./build/%.o,$(SRCS))
 
-OUT_NAME = -o airfight
+MKDIR_P ?= mkdir -p
+
+all:$(OUT)
+
+$(OUT): $(OBJS)
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS) $(LDLIBS)
+
+./build/%.o: ./source/%.cpp
+	$(MKDIR_P) $(@D)	
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 
-all: $(OBJS)
-	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) $(INCLUDE_FLAGS) $(OUT_NAME)
+.PHONY: clean
+clean:
+	rm -f $(OBJS) $(OUT)
+
+
+
+
